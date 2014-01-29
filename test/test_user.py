@@ -1,7 +1,8 @@
 #!/usr/bin/python2
 
 from datetime import datetime
-from pypassdb.user import User, ACB_NORMAL, UNKNOWN_6
+from pypassdb.user import User, ACB_NORMAL, UNKNOWN_6, unpack_user
+from smbpasswd import nthash
 
 
 def pytest_funcarg__user():
@@ -43,3 +44,28 @@ def test_user_initialization(user):
     assert user.bad_password_count == 0
     assert user.logon_count == 0
     assert user.unknown_6 == UNKNOWN_6
+
+
+def pytest_funcarg__user_bin():
+    blob = '\x00\x00\x00\x00\x7f\xa9T|\x7f\xa9T|\x00\x00\x00\x00(x\xbfR\x00' \
+           '\x00\x00\x00\x7f\xa9T|\x06\x00\x00\x00naota\x00\x07\x00\x00\x00' \
+           'KEYAKI\x00\x01\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00' \
+           '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00' \
+           '\x00\x00\x01\x00\x00\x00\x00\x01\x00\x00\x00\x00\x01\x00\x00\x00' \
+           '\x00\xe8\x03\x00\x00\x01\x02\x00\x00\x00\x00\x00\x00\x10\x00\x00' \
+           '\x00Rr\xf5\xe0\xe9\n\x985\x9c\x10\xb0Q\x8c\x91%\xca\x00\x00\x00' \
+           '\x00\x10\x00\x00\x00\xa8\x00\x15\x00\x00\x00 \x00\x00\x00\xff' \
+           '\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff' \
+           '\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+           '\x00\x00\x00\xec\x04\x00\x00'
+    return unpack_user(blob)
+
+
+def test_user_from_binary(user_bin):
+    assert user_bin.username == "naota"
+    assert user_bin.user_rid == 1000
+    assert user_bin.pass_last_set_time == datetime(2013, 12, 29, 1, 17, 28)
+    assert user_bin.domain == "KEYAKI"
+    assert user_bin.group_rid == 513
+    assert user_bin.lm_pw == ""
+    assert user_bin.nt_pw == nthash('hoge').decode("hex")

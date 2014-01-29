@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+import struct
 
 # acct_ctrl flag
 ACB_DISABLED = 0x00000001
@@ -64,3 +65,56 @@ class User:
         self.bad_password_count = 0
         self.logon_count = 0
         self.unknown_6 = UNKNOWN_6
+
+
+def unpack_user(data):
+    def unpack(fmt, data):
+        n = struct.calcsize(fmt)
+        x = struct.unpack(fmt, data[:n])
+        return (data[n:], x)
+
+    def unpack_string(data, isbyte=False):
+        (n,) = struct.unpack("<I", data[:4])
+        x = struct.unpack("%ds" % n, data[4:4+n])
+        if n == 0:
+            assert(isbyte)
+            return (data[4:], "")
+        if isbyte:
+            return (data[4+n:], x[0])
+        else:
+            assert(x[0][-1] == "\x00")
+            return (data[4+n:], x[0][:-1])
+
+    def unpack_bstring(data):
+        return unpack_string(data, True)
+
+    # SAMU_BUFFER_FORMAT_V3       "dddddddBBBBBBBBBBBBddBBBdwdBwwd"
+    user = User()
+    (data, v1) = unpack("<IIIIIII", data)
+    (user.logon_time, user.logoff_time, user.kickoff_time,
+     user.bad_password_time, user.pass_last_set_time,
+     user.pass_can_change_time, user.pass_must_change_time) = \
+        map(datetime.utcfromtimestamp, v1)
+    (data, user.username) = unpack_string(data)
+    (data, user.domain) = unpack_string(data)
+    (data, user.nt_username) = unpack_string(data)
+    (data, user.fullname) = unpack_string(data)
+    (data, user.homedir) = unpack_bstring(data)
+    (data, user.dir_drive) = unpack_bstring(data)
+    (data, user.logon_script) = unpack_bstring(data)
+    (data, user.profile_path) = unpack_bstring(data)
+    (data, user.acct_desc) = unpack_string(data)
+    (data, user.workstations) = unpack_string(data)
+    (data, user.comment) = unpack_string(data)
+    (data, user.munged_dial) = unpack_string(data)
+    (data, (user.user_rid, user.group_rid)) = unpack("<II", data)
+    (data, user.lm_pw) = unpack_bstring(data)
+    (data, user.nt_pw) = unpack_bstring(data)
+    (data, user.nt_pw_hist) = unpack_bstring(data)
+    (data, (user.acct_ctrl, user.logon_divs, user.hours_len)) = \
+        unpack("<IHI", data)
+    (data, user.hours) = unpack_bstring(data)
+    (data, (user.bad_password_count, user.logon_count, user.unknown_6)) = \
+        unpack("<HHI", data)
+    assert(data == "")
+    return user
