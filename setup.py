@@ -14,7 +14,7 @@ class PyTest(Command):
     def run(self):
         import sys
         import subprocess
-        errno = subprocess.call([sys.executable, 'runtests.py'])
+        errno = subprocess.call([sys.executable, 'runtests.py', '--cov', 'pypassdb'])
         raise SystemExit(errno)
 
 setup(name='pypassdb',
