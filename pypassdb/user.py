@@ -66,6 +66,54 @@ class User:
         self.logon_count = 0
         self.unknown_6 = UNKNOWN_6
 
+    def pack(self):
+        def pack_string(data, isbyte=False):
+            if not isbyte:
+                data = data + "\x00"
+            if data == "":
+                return "\x00\x00\x00\x00"
+            return struct.pack("<I%ds" % len(data), len(data), data)
+
+        def pack_bstring(data):
+            return pack_string(data, True)
+
+        def utctimestamp(x):
+            n = int((x-datetime.utcfromtimestamp(0)).total_seconds())
+            assert(n >= 0)
+            return n
+        timev = \
+            (self.logon_time, self.logoff_time, self.kickoff_time,
+             self.bad_password_time, self.pass_last_set_time,
+             self.pass_can_change_time, self.pass_must_change_time)
+        secv = map(utctimestamp, timev)
+        return struct.pack("<IIIIIII", secv[0], secv[1], secv[2], secv[3],
+                           secv[4], secv[5], secv[6]) + \
+            "".join(map(pack_string,
+                    [self.username,
+                     self.domain,
+                     self.nt_username,
+                     self.fullname])) + \
+            "".join(map(pack_bstring,
+                    [self.homedir,
+                     self.dir_drive,
+                     self.logon_script,
+                     self.profile_path])) + \
+            "".join(map(pack_string,
+                    [self.acct_desc,
+                     self.workstations,
+                     self.comment,
+                     self.munged_dial])) + \
+            struct.pack("<II", self.user_rid, self.group_rid) + \
+            "".join(map(pack_bstring,
+                    [self.lm_pw,
+                     self.nt_pw,
+                     self.nt_pw_hist])) + \
+            struct.pack("<IHI", self.acct_ctrl, self.logon_divs,
+                        self.hours_len) + \
+            pack_bstring(self.hours) + \
+            struct.pack("<HHI", self.bad_password_count, self.logon_count,
+                        self.unknown_6)
+
 
 def unpack_user(data):
     def unpack(fmt, data):
