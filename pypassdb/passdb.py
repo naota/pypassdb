@@ -21,6 +21,13 @@ class PassDB:
     def __setitem__(self, name, user):
         self.db[userkey(name)] = user.pack()
 
+    def __delitem__(self, name):
+        self.db.transaction_start()
+        rid = self[name].user_rid
+        del self.db[userkey(name)]
+        del self.db["RID_%08x\x00" % rid]
+        self.db.transaction_commit()
+
     def append(self, user):
         self.db.transaction_start()
         if user.user_rid is None:

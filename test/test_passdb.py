@@ -37,3 +37,14 @@ def test_change_password():
     assert unpack_user(db["USER_naota\x00"]).nt_pw == \
         nthash("hogefuga").decode("hex")
     db.close()
+
+
+def test_delete_user():
+    copyfile(DB_ORIGIN, DB_FILE)
+    pdb = PassDB(DB_FILE)
+    del pdb["naota"]
+    pdb.close()
+    db = tdb.open(DB_FILE)
+    assert "USER_naota\x00" not in db
+    assert "RID_000003e8\x00" not in db
+    db.close()
