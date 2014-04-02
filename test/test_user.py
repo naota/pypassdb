@@ -31,7 +31,7 @@ def test_user_initialization(user):
     assert user.workstations == ""
     assert user.comment == ""
     assert user.munged_dial == ""
-    assert user.user_rid == 0
+    assert user.user_rid is None
     assert user.group_rid == 0
     assert user.lm_pw == ""
     assert user.nt_pw == ""

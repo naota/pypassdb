@@ -21,6 +21,8 @@ def test_append_user():
     pdb.close()
     db = tdb.open(DB_FILE)
     assert "USER_foo\x00" in db
+    assert db["RID_000003e9\x00"] == "foo\x00"
+    assert db["NEXT_RID\x00"] == "\xea\x03\x00\x00"
     db.close()
 
 

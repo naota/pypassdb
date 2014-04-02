@@ -58,7 +58,7 @@ class User:
         self.workstations = ""
         self.comment = ""
         self.munged_dial = ""
-        self.user_rid = 0
+        self.user_rid = None
         self.group_rid = 0
         self.lm_pw = ""
         self.nt_pw = ""
