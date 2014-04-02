@@ -119,6 +119,9 @@ class User:
             struct.pack("<HHI", self.bad_password_count, self.logon_count,
                         self.unknown_6)
 
+    def set_password(self, pwd):
+        self.nt_pw = nthash(pwd).decode("hex")
+
 
 def unpack_user(data):
     def unpack(fmt, data):

@@ -79,3 +79,8 @@ def test_pack_unpack_same(user_bin):
 
 def test_hash_is_same():
     assert nthash("hoge") == smbpasswd.nthash("hoge")
+
+
+def test_user_passwd(user):
+    user.set_password("hogefuga")
+    assert user.nt_pw == nthash("hogefuga").decode("hex")
