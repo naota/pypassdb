@@ -19,6 +19,7 @@ class PassDB:
         return unpack_user(self.db[userkey(name)])
 
     def __setitem__(self, name, user):
+        assert name == user.username
         self.db[userkey(name)] = user.pack()
 
     def __delitem__(self, name):
@@ -27,6 +28,11 @@ class PassDB:
         del self.db[userkey(name)]
         del self.db["RID_%08x\x00" % rid]
         self.db.transaction_commit()
+
+    def __iter__(self):
+        for x in self.db:
+            if x.startswith("USER_"):
+                yield unpack_user(self.db[x])
 
     def append(self, user):
         self.db.transaction_start()

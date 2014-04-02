@@ -48,3 +48,15 @@ def test_delete_user():
     assert "USER_naota\x00" not in db
     assert "RID_000003e8\x00" not in db
     db.close()
+
+
+def test_listup_users():
+    copyfile(DB_ORIGIN, DB_FILE)
+    pdb = PassDB(DB_FILE)
+    pdb.append(User("foo"))
+    pdb.append(User("bar"))
+    xs = []
+    for x in pdb:
+        xs.append(x.username)
+    pdb.close()
+    assert set(xs) == set(["naota", "foo", "bar"])
