@@ -1,8 +1,8 @@
 #!/usr/bin/python2
 
 from datetime import datetime
-from pypassdb.user import User, ACB_NORMAL, UNKNOWN_6, unpack_user
-from smbpasswd import nthash
+from pypassdb.user import User, ACB_NORMAL, UNKNOWN_6, unpack_user, nthash
+import smbpasswd
 
 
 def pytest_funcarg__user():
@@ -75,3 +75,7 @@ def test_user_from_binary(user_bin):
 
 def test_pack_unpack_same(user_bin):
     assert user_bin.pack() == blob
+
+
+def test_hash_is_same():
+    assert nthash("hoge") == smbpasswd.nthash("hoge")

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import struct
+import hashlib
 
 # acct_ctrl flag
 ACB_DISABLED = 0x00000001
@@ -28,6 +29,10 @@ ACB_USE_AES_KEYS = 0x00200000
 
 # unknown_6 constant
 UNKNOWN_6 = 0x000004ec
+
+
+def nthash(text):
+    return hashlib.new('md4', "hoge".encode('utf-16le')).hexdigest().upper()
 
 
 class User:
