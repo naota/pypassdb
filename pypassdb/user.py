@@ -36,7 +36,7 @@ def nthash(text):
 
 
 class User:
-    def __init__(self):
+    def __init__(self, username=None):
         mintime = datetime(1970, 1, 1, 0, 0)
         maxtime = datetime(2036, 2, 6, 15, 6, 39)
         self.logon_time = mintime
@@ -46,7 +46,7 @@ class User:
         self.pass_last_set_time = mintime
         self.pass_can_change_time = mintime
         self.pass_must_change_time = maxtime
-        self.username = ""
+        self.username = username
         self.domain = ""
         self.nt_username = ""
         self.fullname = ""

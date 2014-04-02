@@ -19,7 +19,7 @@ def test_user_initialization(user):
     assert user.pass_last_set_time == mintime
     assert user.pass_can_change_time == mintime
     assert user.pass_must_change_time == maxtime
-    assert user.username == ""
+    assert user.username is None
     assert user.domain == ""
     assert user.nt_username == ""
     assert user.fullname == ""
