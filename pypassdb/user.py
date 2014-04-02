@@ -122,6 +122,12 @@ class User:
     def set_password(self, pwd):
         self.nt_pw = nthash(pwd).decode("hex")
 
+    def enable(self):
+        self.acct_ctrl &= ~ACB_DISABLED
+
+    def disable(self):
+        self.acct_ctrl |= ACB_DISABLED
+
 
 def unpack_user(data):
     def unpack(fmt, data):
