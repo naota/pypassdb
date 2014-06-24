@@ -32,7 +32,7 @@ UNKNOWN_6 = 0x000004ec
 
 
 def nthash(text):
-    return hashlib.new('md4', "hoge".encode('utf-16le')).hexdigest().upper()
+    return hashlib.new('md4', text.encode('utf-16le')).hexdigest().upper()
 
 
 class User:
