@@ -121,6 +121,7 @@ class User:
 
     def set_password(self, pwd):
         self.nt_pw = nthash(pwd).decode("hex")
+        self.pass_last_set_time = datetime.today()
 
     def enable(self):
         self.acct_ctrl &= ~ACB_DISABLED
